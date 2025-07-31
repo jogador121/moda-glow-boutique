@@ -1,10 +1,32 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Search, ShoppingBag, Menu, X, Heart } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Search, ShoppingBag, Menu, X, Heart, ShoppingCart } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { UserMenu } from "./auth/UserMenu";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = useAuth();
+
+  const { data: cartItemsCount = 0 } = useQuery({
+    queryKey: ['cart-count', user?.id],
+    queryFn: async () => {
+      if (!user) return 0;
+
+      const { count, error } = await supabase
+        .from('cart_items')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: !!user,
+  });
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -22,9 +44,9 @@ const Navigation = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
-              <a href="#" className="text-foreground hover:text-primary transition-smooth font-medium">
-                Novidades
-              </a>
+              <Link to="/produtos" className="text-foreground hover:text-primary transition-smooth font-medium">
+                Produtos
+              </Link>
               <a href="#" className="text-foreground hover:text-primary transition-smooth font-medium">
                 Calçados
               </a>
@@ -48,11 +70,18 @@ const Navigation = () => {
             <Button variant="ghost" size="icon" className="hover-lift">
               <Heart className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="hover-lift relative">
-              <ShoppingBag className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                0
-              </span>
+            <Button variant="ghost" size="icon" asChild className="hover-lift relative">
+              <Link to="/carrinho">
+                <ShoppingCart className="h-5 w-5" />
+                {cartItemsCount > 0 && (
+                  <Badge 
+                    variant="destructive" 
+                    className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                  >
+                    {cartItemsCount}
+                  </Badge>
+                )}
+              </Link>
             </Button>
             <UserMenu />
           </div>
@@ -76,17 +105,24 @@ const Navigation = () => {
                 <Button variant="ghost" size="icon" className="hover-lift">
                   <Heart className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon" className="hover-lift relative">
-                  <ShoppingBag className="h-5 w-5" />
-                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    0
-                  </span>
+                <Button variant="ghost" size="icon" asChild className="hover-lift relative">
+                  <Link to="/carrinho">
+                    <ShoppingCart className="h-5 w-5" />
+                    {cartItemsCount > 0 && (
+                      <Badge 
+                        variant="destructive" 
+                        className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                      >
+                        {cartItemsCount}
+                      </Badge>
+                    )}
+                  </Link>
                 </Button>
                 <UserMenu />
               </div>
-              <a href="#" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth">
-                Novidades
-              </a>
+              <Link to="/produtos" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth">
+                Produtos
+              </Link>
               <a href="#" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth">
                 Calçados
               </a>

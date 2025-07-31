@@ -1,57 +1,75 @@
 import { Button } from "@/components/ui/button";
 import { Heart, ShoppingBag, Star } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  compare_price?: number;
+  images: string[];
+  slug: string;
+  is_featured: boolean;
+}
 
 const FeaturedProducts = () => {
-  const products = [
-    {
-      id: 1,
-      name: "Vestido Midi Floral",
-      price: 249.90,
-      originalPrice: 329.90,
-      image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      rating: 4.8,
-      reviews: 124,
-      badge: "Bestseller"
-    },
-    {
-      id: 2,
-      name: "Sandália de Salto Alto",
-      price: 189.90,
-      originalPrice: null,
-      image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      rating: 4.9,
-      reviews: 89,
-      badge: "Novo"
-    },
-    {
-      id: 3,
-      name: "Bolsa de Couro Premium",
-      price: 399.90,
-      originalPrice: 499.90,
-      image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      rating: 4.7,
-      reviews: 156,
-      badge: "Oferta"
-    },
-    {
-      id: 4,
-      name: "Blusa de Seda Premium",
-      price: 159.90,
-      originalPrice: null,
-      image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      rating: 4.6,
-      reviews: 203,
-      badge: "Tendência"
-    }
-  ];
+  const { user } = useAuth();
+  const { toast } = useToast();
 
-  const getBadgeColor = (badge: string) => {
-    switch (badge) {
-      case "Bestseller": return "bg-luxury text-luxury-foreground";
-      case "Novo": return "bg-accent text-accent-foreground";
-      case "Oferta": return "bg-destructive text-destructive-foreground";
-      case "Tendência": return "bg-primary text-primary-foreground";
-      default: return "bg-muted text-muted-foreground";
+  const { data: products, isLoading } = useQuery({
+    queryKey: ['featured-products'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, price, compare_price, images, slug, is_featured')
+        .eq('is_featured', true)
+        .eq('is_active', true)
+        .limit(4);
+
+      if (error) throw error;
+      return data as Product[];
+    },
+  });
+
+  const addToCart = async (product: Product) => {
+    if (!user) {
+      toast({
+        title: "Login necessário",
+        description: "Faça login para adicionar produtos ao carrinho",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('cart_items')
+        .upsert({
+          user_id: user.id,
+          product_id: product.id,
+          quantity: 1,
+        }, {
+          onConflict: 'user_id,product_id',
+          ignoreDuplicates: false,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Produto adicionado",
+        description: `${product.name} foi adicionado ao carrinho`,
+      });
+    } catch (error) {
+      console.error('Erro ao adicionar ao carrinho:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível adicionar o produto ao carrinho",
+        variant: "destructive",
+      });
     }
   };
 
@@ -69,86 +87,100 @@ const FeaturedProducts = () => {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="group relative bg-card rounded-xl overflow-hidden shadow-soft hover:shadow-luxury transition-all duration-500 hover-lift"
-            >
-              {/* Badge */}
-              {product.badge && (
-                <div className={`absolute top-3 left-3 z-10 px-2 py-1 rounded-md text-xs font-medium ${getBadgeColor(product.badge)}`}>
-                  {product.badge}
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-card rounded-xl overflow-hidden shadow-soft animate-pulse">
+                <div className="aspect-[3/4] bg-muted" />
+                <div className="p-4 space-y-3">
+                  <div className="h-4 bg-muted rounded w-20" />
+                  <div className="h-4 bg-muted rounded" />
+                  <div className="h-6 bg-muted rounded w-24" />
+                  <div className="h-10 bg-muted rounded" />
                 </div>
-              )}
-
-              {/* Wishlist Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-3 right-3 z-10 bg-white/80 backdrop-blur-sm hover:bg-white opacity-0 group-hover:opacity-100 transition-all duration-300"
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {products?.map((product) => (
+              <div
+                key={product.id}
+                className="group relative bg-card rounded-xl overflow-hidden shadow-soft hover:shadow-luxury transition-all duration-500 hover-lift"
               >
-                <Heart className="h-4 w-4" />
-              </Button>
-
-              {/* Product Image */}
-              <div className="aspect-[3/4] overflow-hidden">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-              </div>
-
-              {/* Product Info */}
-              <div className="p-4">
-                {/* Rating */}
-                <div className="flex items-center gap-1 mb-2">
-                  <div className="flex items-center">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm font-medium text-foreground ml-1">
-                      {product.rating}
-                    </span>
+                {/* Badge */}
+                {product.is_featured && (
+                  <div className="absolute top-3 left-3 z-10 px-2 py-1 rounded-md text-xs font-medium bg-luxury text-luxury-foreground">
+                    Destaque
                   </div>
-                  <span className="text-xs text-muted-foreground">
-                    ({product.reviews})
-                  </span>
-                </div>
+                )}
 
-                {/* Product Name */}
-                <h3 className="font-medium text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                  {product.name}
-                </h3>
-
-                {/* Price */}
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-lg font-semibold text-luxury">
-                    R$ {product.price.toFixed(2)}
-                  </span>
-                  {product.originalPrice && (
-                    <span className="text-sm text-muted-foreground line-through">
-                      R$ {product.originalPrice.toFixed(2)}
-                    </span>
-                  )}
-                </div>
-
-                {/* Add to Cart Button */}
+                {/* Wishlist Button */}
                 <Button
-                  className="w-full group opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300"
-                  variant="default"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-3 right-3 z-10 bg-white/80 backdrop-blur-sm hover:bg-white opacity-0 group-hover:opacity-100 transition-all duration-300"
+                  onClick={() => {
+                    toast({
+                      title: "Em breve",
+                      description: "Funcionalidade de favoritos em desenvolvimento",
+                    });
+                  }}
                 >
-                  <ShoppingBag className="h-4 w-4" />
-                  Adicionar ao Carrinho
+                  <Heart className="h-4 w-4" />
                 </Button>
+
+                {/* Product Image */}
+                <Link to={`/produto/${product.slug}`}>
+                  <div className="aspect-[3/4] overflow-hidden">
+                    <img
+                      src={product.images?.[0] || '/placeholder.svg'}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                  </div>
+                </Link>
+
+                {/* Product Info */}
+                <div className="p-4">
+                  {/* Product Name */}
+                  <Link to={`/produto/${product.slug}`}>
+                    <h3 className="font-medium text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                      {product.name}
+                    </h3>
+                  </Link>
+
+                  {/* Price */}
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-lg font-semibold text-luxury">
+                      R$ {product.price.toFixed(2)}
+                    </span>
+                    {product.compare_price && product.compare_price > product.price && (
+                      <span className="text-sm text-muted-foreground line-through">
+                        R$ {product.compare_price.toFixed(2)}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Add to Cart Button */}
+                  <Button
+                    className="w-full group opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300"
+                    variant="default"
+                    onClick={() => addToCart(product)}
+                  >
+                    <ShoppingBag className="h-4 w-4" />
+                    Adicionar ao Carrinho
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* View More Button */}
         <div className="text-center mt-12">
-          <Button variant="outline" size="lg" className="hover-lift">
-            Ver Mais Produtos
+          <Button variant="outline" size="lg" className="hover-lift" asChild>
+            <Link to="/produtos">Ver Mais Produtos</Link>
           </Button>
         </div>
       </div>

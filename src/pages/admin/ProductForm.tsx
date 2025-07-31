@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Upload, X, Plus } from 'lucide-react';
+import { ArrowLeft, Upload, X, Plus, RefreshCw, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 
 const productSchema = z.object({
@@ -53,6 +53,13 @@ const ProductForm: React.FC = () => {
   const [materials, setMaterials] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [dimensions, setDimensions] = useState({ length: '', width: '', height: '' });
+  
+  // Estados para Stripe
+  const [stripeProductId, setStripeProductId] = useState('');
+  const [stripePriceId, setStripePriceId] = useState('');
+  const [stripeStatus, setStripeStatus] = useState<'not_synced' | 'synced' | 'pending' | 'error'>('not_synced');
+  const [lastStripeSync, setLastStripeSync] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState(false);
   
   // Estados para inputs de arrays
   const [newSize, setNewSize] = useState('');
@@ -135,6 +142,20 @@ const ProductForm: React.FC = () => {
         setColors(data.colors || []);
         setMaterials(data.materials || []);
         setTags(data.tags || []);
+        
+        // Carregar dados do Stripe
+        setStripeProductId(data.stripe_product_id || '');
+        setStripePriceId(data.stripe_price_id || '');
+        setLastStripeSync(data.last_stripe_sync || null);
+        
+        // Definir status do Stripe
+        if (data.stripe_product_id && data.stripe_price_id) {
+          setStripeStatus('synced');
+        } else if (data.stripe_product_id || data.stripe_price_id) {
+          setStripeStatus('error');
+        } else {
+          setStripeStatus('not_synced');
+        }
         
         if (data.dimensions && typeof data.dimensions === 'object') {
           setDimensions(data.dimensions as { length: string; width: string; height: string; });
@@ -222,6 +243,37 @@ const ProductForm: React.FC = () => {
       .trim();
   };
 
+  const syncWithStripe = async (productId?: string) => {
+    try {
+      setSyncing(true);
+      setStripeStatus('pending');
+      toast.info('Sincronizando com Stripe...');
+
+      const { data, error } = await supabase.functions.invoke('sync-stripe-products');
+      
+      if (error) throw error;
+
+      // Recarregar dados do produto se estamos editando
+      if (isEditing && id) {
+        await fetchProduct();
+      }
+      
+      const successCount = data.synced_count || 0;
+      if (successCount > 0) {
+        toast.success('Produto sincronizado com Stripe!');
+        setStripeStatus('synced');
+      } else {
+        toast.info('Nenhum produto novo para sincronizar');
+      }
+    } catch (error) {
+      console.error('Erro na sincronização:', error);
+      toast.error('Erro ao sincronizar com Stripe');
+      setStripeStatus('error');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   const onSubmit = async (data: ProductFormData) => {
     try {
       setLoading(true);
@@ -237,6 +289,8 @@ const ProductForm: React.FC = () => {
         slug: data.slug || generateSlug(data.name),
       };
 
+      let productId = id;
+
       if (isEditing) {
         const { error } = await supabase
           .from('products')
@@ -246,20 +300,20 @@ const ProductForm: React.FC = () => {
         if (error) throw error;
         toast.success('Produto atualizado com sucesso');
       } else {
-        const { error } = await supabase
+        const { data: insertedData, error } = await supabase
           .from('products')
-          .insert([productData]);
+          .insert([productData])
+          .select('id')
+          .single();
 
         if (error) throw error;
+        productId = insertedData.id;
         toast.success('Produto criado com sucesso');
       }
 
-      // Tentar sincronizar com Stripe automaticamente
-      try {
-        await supabase.functions.invoke('sync-stripe-products');
-      } catch (stripeError) {
-        console.warn('Erro na sincronização com Stripe:', stripeError);
-        // Não falhar o processo principal por isso
+      // Sincronizar com Stripe automaticamente após salvar
+      if (productId) {
+        await syncWithStripe(productId);
       }
 
       navigate('/admin/produtos');
@@ -423,11 +477,107 @@ const ProductForm: React.FC = () => {
                     />
                     <Label htmlFor="is_featured">Produto em Destaque</Label>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                 </div>
+               </CardContent>
+             </Card>
 
-            {/* Atributos do Produto */}
+             {/* Integração Stripe */}
+             <Card>
+               <CardHeader>
+                 <CardTitle className="flex items-center gap-2">
+                   <RefreshCw className="h-5 w-5" />
+                   Integração Stripe
+                 </CardTitle>
+               </CardHeader>
+               <CardContent className="space-y-4">
+                 <div className="flex items-center justify-between">
+                   <div className="space-y-1">
+                     <p className="text-sm font-medium">Status da Sincronização</p>
+                     <div className="flex items-center gap-2">
+                       <Badge 
+                         variant={
+                           stripeStatus === 'synced' ? 'default' : 
+                           stripeStatus === 'pending' ? 'secondary' : 
+                           stripeStatus === 'error' ? 'destructive' : 'outline'
+                         }
+                       >
+                         {stripeStatus === 'synced' ? 'Sincronizado' :
+                          stripeStatus === 'pending' ? 'Pendente' :
+                          stripeStatus === 'error' ? 'Erro' : 'Não Sincronizado'}
+                       </Badge>
+                       {lastStripeSync && (
+                         <span className="text-xs text-muted-foreground">
+                           {new Date(lastStripeSync).toLocaleString('pt-BR')}
+                         </span>
+                       )}
+                     </div>
+                   </div>
+                   <Button
+                     type="button"
+                     variant="outline"
+                     size="sm"
+                     onClick={() => syncWithStripe(id)}
+                     disabled={syncing || !isEditing}
+                   >
+                     <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
+                     {syncing ? 'Sincronizando...' : 'Sincronizar'}
+                   </Button>
+                 </div>
+
+                 <div className="grid grid-cols-1 gap-4">
+                   <div>
+                     <Label htmlFor="stripe_product_id">Stripe Product ID</Label>
+                     <Input
+                       id="stripe_product_id"
+                       value={stripeProductId}
+                       onChange={(e) => setStripeProductId(e.target.value)}
+                       placeholder="prod_..."
+                       disabled={!isEditing}
+                     />
+                     <p className="text-xs text-muted-foreground mt-1">
+                       ID do produto no Stripe (preenchido automaticamente)
+                     </p>
+                   </div>
+                   
+                   <div>
+                     <Label htmlFor="stripe_price_id">Stripe Price ID</Label>
+                     <Input
+                       id="stripe_price_id"
+                       value={stripePriceId}
+                       onChange={(e) => setStripePriceId(e.target.value)}
+                       placeholder="price_..."
+                       disabled={!isEditing}
+                     />
+                     <p className="text-xs text-muted-foreground mt-1">
+                       ID do preço no Stripe (preenchido automaticamente)
+                     </p>
+                   </div>
+                 </div>
+
+                 {stripeProductId && (
+                   <Button
+                     type="button"
+                     variant="outline"
+                     size="sm"
+                     onClick={() => window.open(
+                       `https://dashboard.stripe.com/products/${stripeProductId}`,
+                       '_blank'
+                     )}
+                   >
+                     <ExternalLink className="h-4 w-4 mr-2" />
+                     Ver no Stripe
+                   </Button>
+                 )}
+
+                 <div className="text-xs text-muted-foreground space-y-1">
+                   <p>• A sincronização é automática ao salvar o produto</p>
+                   <p>• Produtos ativos são enviados para o Stripe</p>
+                   <p>• Preços são convertidos para centavos (BRL)</p>
+                 </div>
+               </CardContent>
+             </Card>
+
+             {/* Atributos do Produto */}
             <Card>
               <CardHeader>
                 <CardTitle>Atributos</CardTitle>

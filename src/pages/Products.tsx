@@ -47,18 +47,34 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     }
 
     try {
-      const { error } = await supabase
+      // Verificar se o item já existe no carrinho
+      const { data: existingItem } = await supabase
         .from('cart_items')
-        .upsert({
-          user_id: user.id,
-          product_id: product.id,
-          quantity: 1,
-        }, {
-          onConflict: 'user_id,product_id',
-          ignoreDuplicates: false,
-        });
+        .select('id, quantity')
+        .eq('user_id', user.id)
+        .eq('product_id', product.id)
+        .single();
 
-      if (error) throw error;
+      if (existingItem) {
+        // Se existe, atualizar quantidade
+        const { error } = await supabase
+          .from('cart_items')
+          .update({ quantity: existingItem.quantity + 1 })
+          .eq('id', existingItem.id);
+
+        if (error) throw error;
+      } else {
+        // Se não existe, criar novo
+        const { error } = await supabase
+          .from('cart_items')
+          .insert({
+            user_id: user.id,
+            product_id: product.id,
+            quantity: 1,
+          });
+
+        if (error) throw error;
+      }
 
       toast({
         title: "Produto adicionado",

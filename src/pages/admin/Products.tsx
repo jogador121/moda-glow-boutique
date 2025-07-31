@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Pencil, Trash2, Search, Eye } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Eye, ExternalLink, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Product {
@@ -23,6 +23,9 @@ interface Product {
   categories?: { name: string };
   images: string[];
   created_at: string;
+  stripe_product_id?: string;
+  stripe_price_id?: string;
+  last_stripe_sync?: string;
 }
 
 interface Category {
@@ -223,6 +226,7 @@ export default function AdminProducts() {
                   <TableHead>Preço</TableHead>
                   <TableHead>Estoque</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Stripe</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
@@ -276,6 +280,32 @@ export default function AdminProducts() {
                       <Badge variant={product.is_active ? 'default' : 'secondary'}>
                         {product.is_active ? 'Ativo' : 'Inativo'}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {product.stripe_product_id ? (
+                          <div className="flex items-center gap-1">
+                            <Badge variant="default" className="text-xs">
+                              Sincronizado
+                            </Badge>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(
+                                `https://dashboard.stripe.com/products/${product.stripe_product_id}`,
+                                '_blank'
+                              )}
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <Badge variant="outline" className="text-xs">
+                            <AlertTriangle className="h-3 w-3 mr-1" />
+                            Não sincronizado
+                          </Badge>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">

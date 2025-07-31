@@ -10,10 +10,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
-import { User, Heart, Package, Settings, LogOut } from 'lucide-react';
+import { useAdminCheck } from '@/hooks/useAdminCheck';
+import { User, Heart, Package, Settings, LogOut, Shield } from 'lucide-react';
 
 export function UserMenu() {
   const { user, signOut } = useAuth();
+  const { data: isAdmin } = useAdminCheck();
 
   if (!user) {
     return (
@@ -61,6 +63,17 @@ export function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {isAdmin && (
+          <>
+            <DropdownMenuItem asChild>
+              <Link to="/admin" className="cursor-pointer">
+                <Shield className="mr-2 h-4 w-4" />
+                <span>Dashboard Admin</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
         <DropdownMenuItem asChild>
           <Link to="/profile" className="cursor-pointer">
             <User className="mr-2 h-4 w-4" />

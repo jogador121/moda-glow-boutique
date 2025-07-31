@@ -28,6 +28,21 @@ const Navigation = () => {
     enabled: !!user,
   });
 
+  const { data: categories = [] } = useQuery({
+    queryKey: ['categories-nav'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('id, name, slug')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true })
+        .limit(4);
+
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
@@ -36,9 +51,11 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <h1 className="text-2xl font-display font-semibold text-luxury">
-              Moda Glow
-            </h1>
+            <Link to="/">
+              <h1 className="text-2xl font-display font-semibold text-luxury hover:text-primary transition-smooth cursor-pointer">
+                Moda Glow
+              </h1>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
@@ -47,18 +64,15 @@ const Navigation = () => {
               <Link to="/produtos" className="text-foreground hover:text-primary transition-smooth font-medium">
                 Produtos
               </Link>
-              <a href="#" className="text-foreground hover:text-primary transition-smooth font-medium">
-                Calçados
-              </a>
-              <a href="#" className="text-foreground hover:text-primary transition-smooth font-medium">
-                Vestuário
-              </a>
-              <a href="#" className="text-foreground hover:text-primary transition-smooth font-medium">
-                Acessórios
-              </a>
-              <a href="#" className="text-foreground hover:text-primary transition-smooth font-medium">
-                Promoções
-              </a>
+              {categories.map((category) => (
+                <Link
+                  key={category.id}
+                  to={`/produtos?categoria=${category.slug}`}
+                  className="text-foreground hover:text-primary transition-smooth font-medium"
+                >
+                  {category.name}
+                </Link>
+              ))}
             </div>
           </div>
 
@@ -69,8 +83,10 @@ const Navigation = () => {
                 <Search className="h-5 w-5" />
               </Link>
             </Button>
-            <Button variant="ghost" size="icon" className="hover-lift">
-              <Heart className="h-5 w-5" />
+            <Button variant="ghost" size="icon" asChild className="hover-lift">
+              <Link to="/wishlist">
+                <Heart className="h-5 w-5" />
+              </Link>
             </Button>
             <Button variant="ghost" size="icon" asChild className="hover-lift relative">
               <Link to="/carrinho">
@@ -106,8 +122,10 @@ const Navigation = () => {
                     <Search className="h-5 w-5" />
                   </Link>
                 </Button>
-                <Button variant="ghost" size="icon" className="hover-lift">
-                  <Heart className="h-5 w-5" />
+                <Button variant="ghost" size="icon" asChild className="hover-lift">
+                  <Link to="/wishlist">
+                    <Heart className="h-5 w-5" />
+                  </Link>
                 </Button>
                 <Button variant="ghost" size="icon" asChild className="hover-lift relative">
                   <Link to="/carrinho">
@@ -127,18 +145,15 @@ const Navigation = () => {
               <Link to="/produtos" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth">
                 Produtos
               </Link>
-              <a href="#" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth">
-                Calçados
-              </a>
-              <a href="#" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth">
-                Vestuário
-              </a>
-              <a href="#" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth">
-                Acessórios
-              </a>
-              <a href="#" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth">
-                Promoções
-              </a>
+              {categories.map((category) => (
+                <Link
+                  key={category.id}
+                  to={`/produtos?categoria=${category.slug}`}
+                  className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth"
+                >
+                  {category.name}
+                </Link>
+              ))}
             </div>
           </div>
         )}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -19,6 +20,10 @@ interface Product {
   is_featured: boolean;
   stock_quantity: number;
   slug: string;
+  categories?: {
+    slug: string;
+    name: string;
+  };
 }
 
 interface ProductCardProps {
@@ -128,14 +133,25 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 };
 
 const Products: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const categorySlug = searchParams.get('categoria');
+
   const { data: products, isLoading, error } = useQuery({
-    queryKey: ['products'],
+    queryKey: ['products', categorySlug],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
+        .select(`
+          *,
+          categories!inner(slug, name)
+        `)
+        .eq('is_active', true);
+
+      if (categorySlug) {
+        query = query.eq('categories.slug', categorySlug);
+      }
+
+      const { data, error } = await query.order('created_at', { ascending: false });
 
       if (error) throw error;
       return data as Product[];
@@ -172,9 +188,14 @@ const Products: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">Nossos Produtos</h1>
+        <h1 className="text-3xl font-bold mb-4">
+          {categorySlug ? `Produtos - ${products?.[0]?.categories?.name || categorySlug}` : 'Nossos Produtos'}
+        </h1>
         <p className="text-muted-foreground">
-          Descubra nossa coleção exclusiva de moda feminina
+          {categorySlug 
+            ? `Explore nossa seleção de produtos na categoria ${products?.[0]?.categories?.name || categorySlug}`
+            : 'Descubra nossa coleção exclusiva de moda feminina'
+          }
         </p>
       </div>
 

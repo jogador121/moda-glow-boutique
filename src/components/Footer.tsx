@@ -1,7 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin, Instagram, Facebook, Twitter } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Footer = () => {
+  const { data: categories = [] } = useQuery({
+    queryKey: ['categories-footer'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('id, name, slug')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true })
+        .limit(6);
+
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   return (
     <footer className="bg-luxury text-luxury-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -9,7 +27,11 @@ const Footer = () => {
         <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="lg:col-span-1">
-            <h3 className="text-2xl font-display font-semibold mb-4">Moda Glow</h3>
+            <Link to="/">
+              <h3 className="text-2xl font-display font-semibold mb-4 hover:text-primary transition-colors">
+                Moda Glow
+              </h3>
+            </Link>
             <p className="text-luxury-foreground/70 mb-6 leading-relaxed">
               Sua boutique online de moda feminina, onde elegância e sofisticação se encontram para criar looks únicos e inspiradores.
             </p>
@@ -26,29 +48,44 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Categories */}
-          <div>
-            <h4 className="font-semibold mb-4">Categorias</h4>
-            <ul className="space-y-2">
-              <li><a href="#" className="text-luxury-foreground/70 hover:text-white transition-colors">Vestidos</a></li>
-              <li><a href="#" className="text-luxury-foreground/70 hover:text-white transition-colors">Blusas & Tops</a></li>
-              <li><a href="#" className="text-luxury-foreground/70 hover:text-white transition-colors">Calças & Saias</a></li>
-              <li><a href="#" className="text-luxury-foreground/70 hover:text-white transition-colors">Calçados</a></li>
-              <li><a href="#" className="text-luxury-foreground/70 hover:text-white transition-colors">Acessórios</a></li>
-              <li><a href="#" className="text-luxury-foreground/70 hover:text-white transition-colors">Bolsas</a></li>
-            </ul>
-          </div>
+          {/* Categories - Only show if there are categories */}
+          {categories.length > 0 && (
+            <div>
+              <h4 className="font-semibold mb-4">Categorias</h4>
+              <ul className="space-y-2">
+                {categories.map((category) => (
+                  <li key={category.id}>
+                    <Link 
+                      to={`/produtos?categoria=${category.slug}`}
+                      className="text-luxury-foreground/70 hover:text-white transition-colors"
+                    >
+                      {category.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-          {/* Customer Service */}
+          {/* Legal Pages */}
           <div>
-            <h4 className="font-semibold mb-4">Atendimento</h4>
+            <h4 className="font-semibold mb-4">Páginas</h4>
             <ul className="space-y-2">
-              <li><a href="#" className="text-luxury-foreground/70 hover:text-white transition-colors">Central de Ajuda</a></li>
-              <li><a href="#" className="text-luxury-foreground/70 hover:text-white transition-colors">Trocas e Devoluções</a></li>
-              <li><a href="#" className="text-luxury-foreground/70 hover:text-white transition-colors">Guia de Tamanhos</a></li>
-              <li><a href="#" className="text-luxury-foreground/70 hover:text-white transition-colors">Formas de Pagamento</a></li>
-              <li><a href="#" className="text-luxury-foreground/70 hover:text-white transition-colors">Entregas</a></li>
-              <li><a href="#" className="text-luxury-foreground/70 hover:text-white transition-colors">Política de Privacidade</a></li>
+              <li>
+                <Link to="/termos" className="text-luxury-foreground/70 hover:text-white transition-colors">
+                  Termos de Uso
+                </Link>
+              </li>
+              <li>
+                <Link to="/politica-privacidade" className="text-luxury-foreground/70 hover:text-white transition-colors">
+                  Política de Privacidade
+                </Link>
+              </li>
+              <li>
+                <Link to="/cookies" className="text-luxury-foreground/70 hover:text-white transition-colors">
+                  Política de Cookies
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -88,15 +125,15 @@ const Footer = () => {
               © 2024 Moda Glow. Todos os direitos reservados.
             </p>
             <div className="flex items-center gap-6 text-sm">
-              <a href="#" className="text-luxury-foreground/70 hover:text-white transition-colors">
+              <Link to="/termos" className="text-luxury-foreground/70 hover:text-white transition-colors">
                 Termos de Uso
-              </a>
-              <a href="#" className="text-luxury-foreground/70 hover:text-white transition-colors">
+              </Link>
+              <Link to="/politica-privacidade" className="text-luxury-foreground/70 hover:text-white transition-colors">
                 Política de Privacidade
-              </a>
-              <a href="#" className="text-luxury-foreground/70 hover:text-white transition-colors">
+              </Link>
+              <Link to="/cookies" className="text-luxury-foreground/70 hover:text-white transition-colors">
                 Cookies
-              </a>
+              </Link>
             </div>
           </div>
         </div>

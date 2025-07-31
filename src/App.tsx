@@ -17,6 +17,9 @@ import Profile from "./pages/Profile";
 import Wishlist from "./pages/Wishlist";
 import Search from "./pages/Search";
 import NotFound from "./pages/NotFound";
+import TermosUso from "./pages/TermosUso";
+import PoliticaPrivacidade from "./pages/PoliticaPrivacidade";
+import Cookies from "./pages/Cookies";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import AdminDashboard from "@/pages/admin/Dashboard";
 import AdminProducts from "@/pages/admin/Products";
@@ -54,6 +57,11 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/buscar" element={<Search />} />
+              
+              {/* Legal Pages */}
+              <Route path="/termos" element={<TermosUso />} />
+              <Route path="/politica-privacidade" element={<PoliticaPrivacidade />} />
+              <Route path="/cookies" element={<Cookies />} />
               
               {/* Admin Routes */}
               <Route path="/admin" element={<AdminLayout />}>

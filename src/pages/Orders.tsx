@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Package, Calendar, CreditCard } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 
 interface Order {
   id: string;
@@ -63,27 +65,35 @@ const Orders: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="container mx-auto px-4 py-8 text-center">
-        <h2 className="text-2xl font-bold mb-4">Acesso restrito</h2>
-        <p className="text-muted-foreground mb-6">
-          Faça login para ver seus pedidos
-        </p>
-        <Button onClick={() => navigate('/auth')}>Fazer Login</Button>
+      <div className="min-h-screen">
+        <Navigation />
+        <div className="container mx-auto px-4 py-8 text-center">
+          <h2 className="text-2xl font-bold mb-4">Acesso restrito</h2>
+          <p className="text-muted-foreground mb-6">
+            Faça login para ver seus pedidos
+          </p>
+          <Button onClick={() => navigate('/auth')}>Fazer Login</Button>
+        </div>
+        <Footer />
       </div>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-muted rounded w-64" />
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-48 bg-muted rounded" />
-            ))}
+      <div className="min-h-screen">
+        <Navigation />
+        <div className="container mx-auto px-4 py-8">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-muted rounded w-64" />
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-48 bg-muted rounded" />
+              ))}
+            </div>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -119,8 +129,10 @@ const Orders: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Meus Pedidos</h1>
+    <div className="min-h-screen">
+      <Navigation />
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-8">Meus Pedidos</h1>
 
       {!orders || orders.length === 0 ? (
         <div className="text-center py-12">
@@ -199,6 +211,8 @@ const Orders: React.FC = () => {
           ))}
         </div>
       )}
+      </div>
+      <Footer />
     </div>
   );
 };

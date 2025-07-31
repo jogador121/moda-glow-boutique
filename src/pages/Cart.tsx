@@ -8,6 +8,8 @@ import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 
 interface CartItem {
   id: string;
@@ -116,37 +118,45 @@ const Cart: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="container mx-auto px-4 py-8 text-center">
-        <ShoppingBag className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-        <h2 className="text-2xl font-bold mb-4">Acesse sua conta</h2>
-        <p className="text-muted-foreground mb-6">
-          Faça login para ver os itens do seu carrinho
-        </p>
-        <Button asChild>
-          <Link to="/auth">Fazer Login</Link>
-        </Button>
+      <div className="min-h-screen">
+        <Navigation />
+        <div className="container mx-auto px-4 py-8 text-center">
+          <ShoppingBag className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+          <h2 className="text-2xl font-bold mb-4">Acesse sua conta</h2>
+          <p className="text-muted-foreground mb-6">
+            Faça login para ver os itens do seu carrinho
+          </p>
+          <Button asChild>
+            <Link to="/auth">Fazer Login</Link>
+          </Button>
+        </div>
+        <Footer />
       </div>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse space-y-4">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Card key={i}>
-              <CardContent className="p-6">
-                <div className="flex gap-4">
-                  <div className="w-20 h-20 bg-muted rounded" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-muted rounded w-3/4" />
-                    <div className="h-3 bg-muted rounded w-1/2" />
+      <div className="min-h-screen">
+        <Navigation />
+        <div className="container mx-auto px-4 py-8">
+          <div className="animate-pulse space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Card key={i}>
+                <CardContent className="p-6">
+                  <div className="flex gap-4">
+                    <div className="w-20 h-20 bg-muted rounded" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-muted rounded w-3/4" />
+                      <div className="h-3 bg-muted rounded w-1/2" />
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -157,22 +167,28 @@ const Cart: React.FC = () => {
 
   if (!cartItems || cartItems.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-8 text-center">
-        <ShoppingBag className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-        <h2 className="text-2xl font-bold mb-4">Seu carrinho está vazio</h2>
-        <p className="text-muted-foreground mb-6">
-          Adicione produtos ao seu carrinho para continuar
-        </p>
-        <Button asChild>
-          <Link to="/produtos">Continuar Comprando</Link>
-        </Button>
+      <div className="min-h-screen">
+        <Navigation />
+        <div className="container mx-auto px-4 py-8 text-center">
+          <ShoppingBag className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+          <h2 className="text-2xl font-bold mb-4">Seu carrinho está vazio</h2>
+          <p className="text-muted-foreground mb-6">
+            Adicione produtos ao seu carrinho para continuar
+          </p>
+          <Button asChild>
+            <Link to="/produtos">Continuar Comprando</Link>
+          </Button>
+        </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Meu Carrinho</h1>
+    <div className="min-h-screen">
+      <Navigation />
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-8">Meu Carrinho</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Items do Carrinho */}
@@ -276,8 +292,8 @@ const Cart: React.FC = () => {
                 <span>R$ {total.toFixed(2)}</span>
               </div>
               
-              <Button className="w-full" size="lg">
-                Finalizar Compra
+              <Button className="w-full" size="lg" asChild>
+                <Link to="/checkout">Finalizar Compra</Link>
               </Button>
               
               <Button variant="outline" className="w-full" asChild>
@@ -287,6 +303,8 @@ const Cart: React.FC = () => {
           </Card>
         </div>
       </div>
+      </div>
+      <Footer />
     </div>
   );
 };

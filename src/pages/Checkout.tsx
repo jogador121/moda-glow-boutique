@@ -11,6 +11,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, CreditCard, Lock } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 
 interface CartItem {
   id: string;
@@ -229,58 +231,72 @@ const Checkout: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="container mx-auto px-4 py-8 text-center">
-        <h2 className="text-2xl font-bold mb-4">Acesso restrito</h2>
-        <p className="text-muted-foreground mb-6">
-          Faça login para finalizar sua compra
-        </p>
-        <Button onClick={() => navigate('/auth')}>Fazer Login</Button>
+      <div className="min-h-screen">
+        <Navigation />
+        <div className="container mx-auto px-4 py-8 text-center">
+          <h2 className="text-2xl font-bold mb-4">Acesso restrito</h2>
+          <p className="text-muted-foreground mb-6">
+            Faça login para finalizar sua compra
+          </p>
+          <Button onClick={() => navigate('/auth')}>Fazer Login</Button>
+        </div>
+        <Footer />
       </div>
     );
   }
 
   if (loadingCart) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-muted rounded w-64" />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <div className="h-96 bg-muted rounded" />
-            </div>
-            <div className="space-y-4">
-              <div className="h-48 bg-muted rounded" />
+      <div className="min-h-screen">
+        <Navigation />
+        <div className="container mx-auto px-4 py-8">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-muted rounded w-64" />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <div className="h-96 bg-muted rounded" />
+              </div>
+              <div className="space-y-4">
+                <div className="h-48 bg-muted rounded" />
+              </div>
             </div>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   if (!cartItems || cartItems.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-8 text-center">
-        <h2 className="text-2xl font-bold mb-4">Carrinho vazio</h2>
-        <p className="text-muted-foreground mb-6">
-          Adicione produtos ao carrinho antes de finalizar a compra
-        </p>
-        <Button onClick={() => navigate('/produtos')}>Ver Produtos</Button>
+      <div className="min-h-screen">
+        <Navigation />
+        <div className="container mx-auto px-4 py-8 text-center">
+          <h2 className="text-2xl font-bold mb-4">Carrinho vazio</h2>
+          <p className="text-muted-foreground mb-6">
+            Adicione produtos ao carrinho antes de finalizar a compra
+          </p>
+          <Button onClick={() => navigate('/produtos')}>Ver Produtos</Button>
+        </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Button
-        variant="ghost"
-        onClick={() => navigate('/carrinho')}
-        className="mb-6"
-      >
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Voltar ao Carrinho
-      </Button>
+    <div className="min-h-screen">
+      <Navigation />
+      <div className="container mx-auto px-4 py-8">
+        <Button
+          variant="ghost"
+          onClick={() => navigate('/carrinho')}
+          className="mb-6"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Voltar ao Carrinho
+        </Button>
 
-      <h1 className="text-3xl font-bold mb-8">Finalizar Compra</h1>
+        <h1 className="text-3xl font-bold mb-8">Finalizar Compra</h1>
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -474,6 +490,8 @@ const Checkout: React.FC = () => {
           </div>
         </div>
       </form>
+      </div>
+      <Footer />
     </div>
   );
 };

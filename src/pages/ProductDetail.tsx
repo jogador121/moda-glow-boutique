@@ -10,6 +10,8 @@ import { ArrowLeft, Heart, ShoppingCart, Star } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import ProductReviews from '@/components/ProductReviews';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 
 interface Product {
   id: string;
@@ -97,29 +99,37 @@ const ProductDetail: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="aspect-square bg-muted rounded-lg" />
-            <div className="space-y-4">
-              <div className="h-8 bg-muted rounded" />
-              <div className="h-4 bg-muted rounded w-24" />
-              <div className="h-20 bg-muted rounded" />
+      <div className="min-h-screen">
+        <Navigation />
+        <div className="container mx-auto px-4 py-8">
+          <div className="animate-pulse">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="aspect-square bg-muted rounded-lg" />
+              <div className="space-y-4">
+                <div className="h-8 bg-muted rounded" />
+                <div className="h-4 bg-muted rounded w-24" />
+                <div className="h-20 bg-muted rounded" />
+              </div>
             </div>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   if (error || !product) {
     return (
-      <div className="container mx-auto px-4 py-8 text-center">
-        <p className="text-destructive mb-4">Produto não encontrado</p>
-        <Button onClick={() => navigate('/produtos')}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Voltar aos produtos
-        </Button>
+      <div className="min-h-screen">
+        <Navigation />
+        <div className="container mx-auto px-4 py-8 text-center">
+          <p className="text-destructive mb-4">Produto não encontrado</p>
+          <Button onClick={() => navigate('/produtos')}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Voltar aos produtos
+          </Button>
+        </div>
+        <Footer />
       </div>
     );
   }
@@ -127,17 +137,19 @@ const ProductDetail: React.FC = () => {
   const images = product.images?.length > 0 ? product.images : ['/placeholder.svg'];
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Button
-        variant="ghost"
-        onClick={() => navigate(-1)}
-        className="mb-6"
-      >
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Voltar
-      </Button>
+    <div className="min-h-screen">
+      <Navigation />
+      <div className="container mx-auto px-4 py-8">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="mb-6"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Voltar
+        </Button>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Galeria de Imagens */}
         <div className="space-y-4">
           <div className="aspect-square overflow-hidden rounded-lg border">
@@ -342,6 +354,8 @@ const ProductDetail: React.FC = () => {
           </div>
         </div>
       </div>
+      </div>
+      <Footer />
     </div>
   );
 };

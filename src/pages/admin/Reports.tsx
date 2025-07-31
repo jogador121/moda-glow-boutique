@@ -80,14 +80,14 @@ export default function AdminReports() {
 
       // Calcular métricas de receita
       const totalRevenue = ordersData?.reduce((sum, order) => 
-        sum + parseFloat(order.total_amount), 0) || 0;
+        sum + parseFloat(order.total_amount?.toString() || '0'), 0) || 0;
       
       const monthlyRevenue = ordersData?.filter(order => {
         const orderDate = new Date(order.created_at);
         const monthAgo = new Date();
         monthAgo.setMonth(monthAgo.getMonth() - 1);
         return orderDate >= monthAgo;
-      }).reduce((sum, order) => sum + parseFloat(order.total_amount), 0) || 0;
+      }).reduce((sum, order) => sum + parseFloat(order.total_amount?.toString() || '0'), 0) || 0;
 
       const averageOrderValue = ordersData?.length ? totalRevenue / ordersData.length : 0;
 
@@ -106,7 +106,7 @@ export default function AdminReports() {
         }) || [];
         
         const dayRevenue = dayOrders.reduce((sum, order) => 
-          sum + parseFloat(order.total_amount), 0);
+          sum + parseFloat(order.total_amount?.toString() || '0'), 0);
         
         salesByDay.push({
           date: date.toLocaleDateString('pt-BR', { month: 'short', day: 'numeric' }),
@@ -129,7 +129,7 @@ export default function AdminReports() {
             };
           }
           productSales[item.product_name].quantity += item.quantity;
-          productSales[item.product_name].revenue += parseFloat(item.total_price);
+          productSales[item.product_name].revenue += parseFloat(item.total_price?.toString() || '0');
         });
       });
 

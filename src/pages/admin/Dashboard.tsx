@@ -46,8 +46,8 @@ export default function AdminDashboard() {
         ]);
 
         // Calcular receita total
-        const totalRevenue = ordersRes.data?.reduce((sum, order) => 
-          sum + parseFloat(order.total_amount || '0'), 0) || 0;
+        const totalRevenue = ordersRes.data?.reduce((sum: number, order: any) => 
+          sum + parseFloat(order.total_amount?.toString() || '0'), 0) || 0;
 
         // Dados para gráfico de vendas (últimos 7 dias)
         const last7Days = [];

@@ -17,6 +17,13 @@ import Profile from "./pages/Profile";
 import Wishlist from "./pages/Wishlist";
 import Search from "./pages/Search";
 import NotFound from "./pages/NotFound";
+import { AdminLayout } from "@/layouts/AdminLayout";
+import AdminDashboard from "@/pages/admin/Dashboard";
+import AdminProducts from "@/pages/admin/Products";
+import AdminCategories from "@/pages/admin/Categories";
+import AdminOrders from "@/pages/admin/Orders";
+import AdminUsers from "@/pages/admin/Users";
+import AdminReports from "@/pages/admin/Reports";
 
 // Create QueryClient inside the component to ensure React context is available
 function App() {
@@ -46,6 +53,17 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/buscar" element={<Search />} />
+              
+              {/* Admin Routes */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="produtos" element={<AdminProducts />} />
+                <Route path="categorias" element={<AdminCategories />} />
+                <Route path="pedidos" element={<AdminOrders />} />
+                <Route path="usuarios" element={<AdminUsers />} />
+                <Route path="relatorios" element={<AdminReports />} />
+              </Route>
+              
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

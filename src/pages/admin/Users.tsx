@@ -55,7 +55,7 @@ export default function AdminUsers() {
 
           const ordersCount = ordersData?.length || 0;
           const totalSpent = ordersData?.reduce(
-            (sum, order) => sum + parseFloat(order.total_amount), 0
+            (sum, order) => sum + parseFloat(order.total_amount?.toString() || '0'), 0
           ) || 0;
 
           return {

@@ -71,14 +71,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/`,
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
+        }
+      });
+      
+      if (error) {
+        console.error('Google Sign In Error:', error);
+        return { error };
       }
-    });
-    
-    return { error };
+      
+      return { error: null };
+    } catch (error) {
+      console.error('Google Sign In Exception:', error);
+      return { error };
+    }
   };
 
   const resetPassword = async (email: string) => {

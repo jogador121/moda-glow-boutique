@@ -2,7 +2,8 @@ project_id = "aobacfnkcurqmffsqaqj"
 
 [auth]
 enabled = true
-site_url = "http://localhost:3000"
+site_url = "https://modaglow.netlify.app"
+additional_redirect_urls = ["http://localhost:3000"]
 
 [functions.create-payment]
 verify_jwt = true

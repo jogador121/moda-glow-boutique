@@ -105,16 +105,17 @@ const Checkout: React.FC = () => {
         throw new Error('Carrinho vazio ou usuário não autenticado');
       }
 
-      // Criar pedido
+      // Criar pedido - order_number será gerado automaticamente via trigger
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
           user_id: user.id,
+          order_number: '', // Será preenchido automaticamente pelo trigger
           subtotal,
           shipping_cost: shippingCost,
           total_amount: total,
-          shipping_address: shippingAddress,
-          billing_address: useSameAddress ? shippingAddress : billingAddress,
+          shipping_address: shippingAddress as any,
+          billing_address: (useSameAddress ? shippingAddress : billingAddress) as any,
           notes: notes || null,
           status: 'pending',
           payment_status: 'pending',

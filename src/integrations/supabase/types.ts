@@ -295,16 +295,22 @@ export type Database = {
           images: string[] | null
           is_active: boolean | null
           is_featured: boolean | null
+          last_stripe_sync: string | null
           materials: string[] | null
           meta_description: string | null
           meta_title: string | null
+          min_stock_alert: number | null
           name: string
           price: number
+          reserved_quantity: number | null
           short_description: string | null
           sizes: string[] | null
           sku: string | null
           slug: string
           stock_quantity: number | null
+          stripe_metadata: Json | null
+          stripe_price_id: string | null
+          stripe_product_id: string | null
           tags: string[] | null
           updated_at: string
           weight: number | null
@@ -321,16 +327,22 @@ export type Database = {
           images?: string[] | null
           is_active?: boolean | null
           is_featured?: boolean | null
+          last_stripe_sync?: string | null
           materials?: string[] | null
           meta_description?: string | null
           meta_title?: string | null
+          min_stock_alert?: number | null
           name: string
           price: number
+          reserved_quantity?: number | null
           short_description?: string | null
           sizes?: string[] | null
           sku?: string | null
           slug: string
           stock_quantity?: number | null
+          stripe_metadata?: Json | null
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
           tags?: string[] | null
           updated_at?: string
           weight?: number | null
@@ -347,16 +359,22 @@ export type Database = {
           images?: string[] | null
           is_active?: boolean | null
           is_featured?: boolean | null
+          last_stripe_sync?: string | null
           materials?: string[] | null
           meta_description?: string | null
           meta_title?: string | null
+          min_stock_alert?: number | null
           name?: string
           price?: number
+          reserved_quantity?: number | null
           short_description?: string | null
           sizes?: string[] | null
           sku?: string | null
           slug?: string
           stock_quantity?: number | null
+          stripe_metadata?: Json | null
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
           tags?: string[] | null
           updated_at?: string
           weight?: number | null
@@ -457,6 +475,50 @@ export type Database = {
           },
         ]
       }
+      stripe_sync_logs: {
+        Row: {
+          action: string
+          created_at: string
+          error_message: string | null
+          id: string
+          product_id: string | null
+          status: string
+          stripe_price_id: string | null
+          stripe_product_id: string | null
+          sync_data: Json | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          product_id?: string | null
+          status?: string
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
+          sync_data?: Json | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          product_id?: string | null
+          status?: string
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
+          sync_data?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stripe_sync_logs_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wishlists: {
         Row: {
           created_at: string
@@ -491,6 +553,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_available_stock: {
+        Args: { product_id: string }
+        Returns: number
+      }
       generate_order_number: {
         Args: Record<PropertyKey, never>
         Returns: string

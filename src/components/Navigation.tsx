@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Search, ShoppingBag, User, Menu, X, Heart } from "lucide-react";
+import { Search, ShoppingBag, Menu, X, Heart } from "lucide-react";
+import { UserMenu } from "./auth/UserMenu";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -47,15 +48,13 @@ const Navigation = () => {
             <Button variant="ghost" size="icon" className="hover-lift">
               <Heart className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="hover-lift">
-              <User className="h-5 w-5" />
-            </Button>
             <Button variant="ghost" size="icon" className="hover-lift relative">
               <ShoppingBag className="h-5 w-5" />
               <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
                 0
               </span>
             </Button>
+            <UserMenu />
           </div>
 
           {/* Mobile menu button */}
@@ -77,15 +76,13 @@ const Navigation = () => {
                 <Button variant="ghost" size="icon" className="hover-lift">
                   <Heart className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon" className="hover-lift">
-                  <User className="h-5 w-5" />
-                </Button>
                 <Button variant="ghost" size="icon" className="hover-lift relative">
                   <ShoppingBag className="h-5 w-5" />
                   <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
                     0
                   </span>
                 </Button>
+                <UserMenu />
               </div>
               <a href="#" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth">
                 Novidades

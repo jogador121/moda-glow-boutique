@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, Heart, ShoppingCart, Star } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import ProductReviews from '@/components/ProductReviews';
 
 interface Product {
   id: string;
@@ -263,12 +264,37 @@ const ProductDetail: React.FC = () => {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => {
-                // TODO: Implementar wishlist
-                toast({
-                  title: "Em breve",
-                  description: "Funcionalidade de favoritos em desenvolvimento",
-                });
+              onClick={async () => {
+                if (!user) {
+                  toast({
+                    title: "Login necessário",
+                    description: "Faça login para adicionar produtos aos favoritos.",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+
+                try {
+                  const { error } = await supabase
+                    .from('wishlists')
+                    .insert({
+                      user_id: user.id,
+                      product_id: product.id,
+                    });
+
+                  if (error) throw error;
+
+                  toast({
+                    title: "Adicionado aos favoritos",
+                    description: "Produto adicionado à sua lista de desejos!",
+                  });
+                } catch (error) {
+                  toast({
+                    title: "Erro",
+                    description: "Não foi possível adicionar aos favoritos.",
+                    variant: "destructive",
+                  });
+                }
               }}
             >
               <Heart className="h-4 w-4" />
@@ -309,6 +335,11 @@ const ProductDetail: React.FC = () => {
               </Card>
             </>
           )}
+
+          {/* Seção de Avaliações */}
+          <div className="mt-8">
+            <ProductReviews productId={product.id} />
+          </div>
         </div>
       </div>
     </div>

@@ -64,8 +64,10 @@ const Navigation = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" size="icon" className="hover-lift">
-              <Search className="h-5 w-5" />
+            <Button variant="ghost" size="icon" asChild className="hover-lift">
+              <Link to="/buscar">
+                <Search className="h-5 w-5" />
+              </Link>
             </Button>
             <Button variant="ghost" size="icon" className="hover-lift">
               <Heart className="h-5 w-5" />
@@ -99,8 +101,10 @@ const Navigation = () => {
           <div className="md:hidden animate-slideUp">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-card rounded-lg mt-2 shadow-elegant">
               <div className="flex justify-center space-x-4 mb-4">
-                <Button variant="ghost" size="icon" className="hover-lift">
-                  <Search className="h-5 w-5" />
+                <Button variant="ghost" size="icon" asChild className="hover-lift">
+                  <Link to="/buscar">
+                    <Search className="h-5 w-5" />
+                  </Link>
                 </Button>
                 <Button variant="ghost" size="icon" className="hover-lift">
                   <Heart className="h-5 w-5" />

@@ -15,6 +15,7 @@ import OrderConfirmed from "./pages/OrderConfirmed";
 import Orders from "./pages/Orders";
 import Profile from "./pages/Profile";
 import Wishlist from "./pages/Wishlist";
+import Search from "./pages/Search";
 import NotFound from "./pages/NotFound";
 
 // Create QueryClient inside the component to ensure React context is available
@@ -44,6 +45,7 @@ function App() {
               <Route path="/meus-pedidos" element={<Orders />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/buscar" element={<Search />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

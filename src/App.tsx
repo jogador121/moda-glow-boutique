@@ -13,6 +13,8 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import OrderConfirmed from "./pages/OrderConfirmed";
 import Orders from "./pages/Orders";
+import Profile from "./pages/Profile";
+import Wishlist from "./pages/Wishlist";
 import NotFound from "./pages/NotFound";
 
 // Create QueryClient inside the component to ensure React context is available
@@ -40,6 +42,8 @@ function App() {
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/pedido-confirmado" element={<OrderConfirmed />} />
               <Route path="/meus-pedidos" element={<Orders />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/wishlist" element={<Wishlist />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

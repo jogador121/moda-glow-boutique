@@ -24,6 +24,7 @@ import AdminCategories from "@/pages/admin/Categories";
 import AdminOrders from "@/pages/admin/Orders";
 import AdminUsers from "@/pages/admin/Users";
 import AdminReports from "@/pages/admin/Reports";
+import ProductForm from "@/pages/admin/ProductForm";
 
 // Create QueryClient inside the component to ensure React context is available
 function App() {
@@ -58,6 +59,8 @@ function App() {
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
                 <Route path="produtos" element={<AdminProducts />} />
+                <Route path="produtos/novo" element={<ProductForm />} />
+                <Route path="produtos/:id/editar" element={<ProductForm />} />
                 <Route path="categorias" element={<AdminCategories />} />
                 <Route path="pedidos" element={<AdminOrders />} />
                 <Route path="usuarios" element={<AdminUsers />} />

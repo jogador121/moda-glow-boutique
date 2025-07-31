@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { Package, ShoppingCart, Users, TrendingUp } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import StripeSync from '@/components/admin/StripeSync';
 
 interface DashboardStats {
   totalProducts: number;
@@ -253,6 +254,9 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
       )}
+
+      {/* Sincronização Stripe */}
+      <StripeSync />
     </div>
   );
 }

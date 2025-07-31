@@ -144,6 +144,14 @@ const Checkout: React.FC = () => {
 
       if (itemsError) throw itemsError;
 
+      // Atualizar pedido com payment_id para webhook tracking
+      const { error: updateOrderError } = await supabase
+        .from('orders')
+        .update({ payment_id: `temp_${order.id}` })
+        .eq('id', order.id);
+
+      if (updateOrderError) throw updateOrderError;
+
       // Processar pagamento via Stripe
       const { data: paymentData, error: paymentError } = await supabase.functions
         .invoke('create-payment', {
@@ -155,6 +163,10 @@ const Checkout: React.FC = () => {
               quantity: item.quantity,
               price: item.product.price,
             })),
+            metadata: {
+              order_id: order.id,
+              order_number: order.order_number,
+            },
           },
         });
 

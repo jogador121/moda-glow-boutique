@@ -68,20 +68,38 @@ const ProductDetail: React.FC = () => {
     if (!product) return;
 
     try {
-      const { error } = await supabase
+      // Verificar se o item já existe no carrinho com as mesmas especificações
+      const { data: existingItem } = await supabase
         .from('cart_items')
-        .upsert({
-          user_id: user.id,
-          product_id: product.id,
-          quantity,
-          selected_size: selectedSize || null,
-          selected_color: selectedColor || null,
-        }, {
-          onConflict: 'user_id,product_id',
-          ignoreDuplicates: false,
-        });
+        .select('id, quantity')
+        .eq('user_id', user.id)
+        .eq('product_id', product.id)
+        .eq('selected_size', selectedSize || null)
+        .eq('selected_color', selectedColor || null)
+        .single();
 
-      if (error) throw error;
+      if (existingItem) {
+        // Se existe, atualizar quantidade
+        const { error } = await supabase
+          .from('cart_items')
+          .update({ quantity: existingItem.quantity + quantity })
+          .eq('id', existingItem.id);
+
+        if (error) throw error;
+      } else {
+        // Se não existe, criar novo
+        const { error } = await supabase
+          .from('cart_items')
+          .insert({
+            user_id: user.id,
+            product_id: product.id,
+            quantity,
+            selected_size: selectedSize || null,
+            selected_color: selectedColor || null,
+          });
+
+        if (error) throw error;
+      }
 
       toast({
         title: "Produto adicionado",

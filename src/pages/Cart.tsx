@@ -1,118 +1,32 @@
 import React from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
-
-interface CartItem {
-  id: string;
-  quantity: number;
-  selected_size?: string;
-  selected_color?: string;
-  product: {
-    id: string;
-    name: string;
-    price: number;
-    images: string[];
-    stock_quantity: number;
-    slug: string;
-  };
-}
+import { useCart } from '@/hooks/useCart';
 
 const Cart: React.FC = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const { 
+    items: cartItems, 
+    isLoading, 
+    totals,
+    updateQuantity: updateQuantityMutation,
+    removeItem: removeItemMutation,
+    isUpdating,
+    isRemoving 
+  } = useCart();
 
-  const { data: cartItems, isLoading } = useQuery({
-    queryKey: ['cart', user?.id],
-    queryFn: async () => {
-      if (!user) return [];
-
-      const { data, error } = await supabase
-        .from('cart_items')
-        .select(`
-          id,
-          quantity,
-          selected_size,
-          selected_color,
-          product:products (
-            id,
-            name,
-            price,
-            images,
-            stock_quantity,
-            slug
-          )
-        `)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data as CartItem[];
-    },
-    enabled: !!user,
-  });
-
-  const updateQuantityMutation = useMutation({
-    mutationFn: async ({ itemId, quantity }: { itemId: string; quantity: number }) => {
-      const { error } = await supabase
-        .from('cart_items')
-        .update({ quantity })
-        .eq('id', itemId);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart', user?.id] });
-    },
-    onError: () => {
-      toast({
-        title: "Erro",
-        description: "Não foi possível atualizar a quantidade",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const removeItemMutation = useMutation({
-    mutationFn: async (itemId: string) => {
-      const { error } = await supabase
-        .from('cart_items')
-        .delete()
-        .eq('id', itemId);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart', user?.id] });
-      toast({
-        title: "Item removido",
-        description: "Produto removido do carrinho",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Erro",
-        description: "Não foi possível remover o item",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const updateQuantity = (itemId: string, newQuantity: number) => {
+  const handleUpdateQuantity = (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) return;
     updateQuantityMutation.mutate({ itemId, quantity: newQuantity });
   };
 
-  const removeItem = (itemId: string) => {
+  const handleRemoveItem = (itemId: string) => {
     removeItemMutation.mutate(itemId);
   };
 
@@ -160,10 +74,6 @@ const Cart: React.FC = () => {
       </div>
     );
   }
-
-  const total = cartItems?.reduce((sum, item) => {
-    return sum + (item.product.price * item.quantity);
-  }, 0) || 0;
 
   if (!cartItems || cartItems.length === 0) {
     return (
@@ -226,8 +136,8 @@ const Cart: React.FC = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          disabled={item.quantity <= 1 || updateQuantityMutation.isPending}
+                          onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                          disabled={item.quantity <= 1 || isUpdating}
                         >
                           <Minus className="h-3 w-3" />
                         </Button>
@@ -237,10 +147,10 @@ const Cart: React.FC = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
                           disabled={
                             item.quantity >= item.product.stock_quantity ||
-                            updateQuantityMutation.isPending
+                            isUpdating
                           }
                         >
                           <Plus className="h-3 w-3" />
@@ -254,8 +164,8 @@ const Cart: React.FC = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => removeItem(item.id)}
-                          disabled={removeItemMutation.isPending}
+                          onClick={() => handleRemoveItem(item.id)}
+                          disabled={isRemoving}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -276,8 +186,8 @@ const Cart: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between">
-                <span>Subtotal ({cartItems.length} {cartItems.length === 1 ? 'item' : 'itens'})</span>
-                <span>R$ {total.toFixed(2)}</span>
+                <span>Subtotal ({totals.itemCount} {totals.itemCount === 1 ? 'item' : 'itens'})</span>
+                <span>R$ {totals.subtotal.toFixed(2)}</span>
               </div>
               
               <div className="flex justify-between">
@@ -289,7 +199,7 @@ const Cart: React.FC = () => {
               
               <div className="flex justify-between font-semibold text-lg">
                 <span>Total</span>
-                <span>R$ {total.toFixed(2)}</span>
+                <span>R$ {totals.subtotal.toFixed(2)}</span>
               </div>
               
               <Button className="w-full" size="lg" asChild>

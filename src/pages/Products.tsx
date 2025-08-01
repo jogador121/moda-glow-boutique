@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useWishlist } from '@/hooks/useWishlist';
+import { useCart } from '@/hooks/useCart';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 
@@ -37,6 +38,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { isInWishlist, toggleWishlist } = useWishlist();
+  const { addToCart, isAdding } = useCart();
 
   const handleWishlistClick = () => {
     if (!user) {
@@ -51,7 +53,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     toggleWishlist.mutate({ productId: product.id, productName: product.name });
   };
 
-  const addToCart = async () => {
+  const handleAddToCart = () => {
     if (!user) {
       toast({
         title: "Login necessário",
@@ -61,48 +63,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       return;
     }
 
-    try {
-      // Verificar se o item já existe no carrinho
-      const { data: existingItem } = await supabase
-        .from('cart_items')
-        .select('id, quantity')
-        .eq('user_id', user.id)
-        .eq('product_id', product.id)
-        .single();
-
-      if (existingItem) {
-        // Se existe, atualizar quantidade
-        const { error } = await supabase
-          .from('cart_items')
-          .update({ quantity: existingItem.quantity + 1 })
-          .eq('id', existingItem.id);
-
-        if (error) throw error;
-      } else {
-        // Se não existe, criar novo
-        const { error } = await supabase
-          .from('cart_items')
-          .insert({
-            user_id: user.id,
-            product_id: product.id,
-            quantity: 1,
-          });
-
-        if (error) throw error;
-      }
-
-      toast({
-        title: "Produto adicionado",
-        description: `${product.name} foi adicionado ao carrinho`,
-      });
-    } catch (error) {
-      console.error('Erro ao adicionar ao carrinho:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível adicionar o produto ao carrinho",
-        variant: "destructive",
-      });
-    }
+    addToCart.mutate({ 
+      productId: product.id,
+      quantity: 1 
+    });
   };
 
   return (
@@ -153,12 +117,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           className="flex-1"
           onClick={(e) => {
             e.preventDefault();
-            addToCart();
+            handleAddToCart();
           }}
-          disabled={product.stock_quantity === 0}
+          disabled={product.stock_quantity === 0 || isAdding}
         >
           <ShoppingCart className="h-4 w-4 mr-2" />
-          {product.stock_quantity === 0 ? 'Esgotado' : 'Adicionar'}
+          {product.stock_quantity === 0 ? 'Esgotado' : isAdding ? 'Adicionando...' : 'Adicionar'}
         </Button>
       </CardFooter>
     </Card>

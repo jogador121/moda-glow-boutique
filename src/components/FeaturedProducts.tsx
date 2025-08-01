@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/hooks/useCart";
 
 interface Product {
   id: string;
@@ -19,6 +20,7 @@ interface Product {
 const FeaturedProducts = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { addToCart, isAdding } = useCart();
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['featured-products'],
@@ -35,7 +37,7 @@ const FeaturedProducts = () => {
     },
   });
 
-  const addToCart = async (product: Product) => {
+  const handleAddToCart = (product: Product) => {
     if (!user) {
       toast({
         title: "Login necessário",
@@ -45,48 +47,10 @@ const FeaturedProducts = () => {
       return;
     }
 
-    try {
-      // Verificar se o item já existe no carrinho
-      const { data: existingItem } = await supabase
-        .from('cart_items')
-        .select('id, quantity')
-        .eq('user_id', user.id)
-        .eq('product_id', product.id)
-        .single();
-
-      if (existingItem) {
-        // Se existe, atualizar quantidade
-        const { error } = await supabase
-          .from('cart_items')
-          .update({ quantity: existingItem.quantity + 1 })
-          .eq('id', existingItem.id);
-
-        if (error) throw error;
-      } else {
-        // Se não existe, criar novo
-        const { error } = await supabase
-          .from('cart_items')
-          .insert({
-            user_id: user.id,
-            product_id: product.id,
-            quantity: 1,
-          });
-
-        if (error) throw error;
-      }
-
-      toast({
-        title: "Produto adicionado",
-        description: `${product.name} foi adicionado ao carrinho`,
-      });
-    } catch (error) {
-      console.error('Erro ao adicionar ao carrinho:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível adicionar o produto ao carrinho",
-        variant: "destructive",
-      });
-    }
+    addToCart.mutate({ 
+      productId: product.id,
+      quantity: 1 
+    });
   };
 
   return (
@@ -183,7 +147,8 @@ const FeaturedProducts = () => {
                   <Button
                     className="w-full group xs:opacity-0 xs:group-hover:opacity-100 xs:transform xs:translate-y-2 xs:group-hover:translate-y-0 transition-all duration-300 min-h-[44px] text-sm xs:text-base"
                     variant="default"
-                    onClick={() => addToCart(product)}
+                    onClick={() => handleAddToCart(product)}
+                    disabled={isAdding}
                   >
                     <ShoppingBag className="h-4 w-4 mr-2" />
                     <span className="hidden xs:inline">Adicionar ao Carrinho</span>

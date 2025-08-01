@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { useCart } from "@/hooks/useCart";
 
 interface WishlistItem {
   id: string;
@@ -92,54 +93,20 @@ const Wishlist = () => {
     },
   });
 
-  const addToCart = useMutation({
-    mutationFn: async (productId: string) => {
-      if (!user) throw new Error('Usuário não autenticado');
+  const { addToCart, isAdding } = useCart();
 
-      // Verificar se já existe no carrinho
-      const { data: existingItem } = await supabase
-        .from('cart_items')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('product_id', productId)
-        .maybeSingle();
-
-      if (existingItem) {
-        // Atualizar quantidade
-        const { error } = await supabase
-          .from('cart_items')
-          .update({ quantity: existingItem.quantity + 1 })
-          .eq('id', existingItem.id);
-
-        if (error) throw error;
-      } else {
-        // Criar novo item
-        const { error } = await supabase
-          .from('cart_items')
-          .insert({
-            user_id: user.id,
-            product_id: productId,
-            quantity: 1,
-          });
-
-        if (error) throw error;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart-count', user?.id] });
+  const handleAddToCart = (productId: string) => {
+    if (!user) {
       toast({
-        title: "Adicionado ao carrinho",
-        description: "O produto foi adicionado ao seu carrinho.",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Erro",
-        description: "Não foi possível adicionar ao carrinho. Tente novamente.",
+        title: "Login necessário", 
+        description: "Faça login para adicionar produtos ao carrinho",
         variant: "destructive",
       });
-    },
-  });
+      return;
+    }
+
+    addToCart.mutate({ productId, quantity: 1 });
+  };
 
   if (isLoading) {
     return (
@@ -250,9 +217,9 @@ const Wishlist = () => {
                         
                         <Button
                           className="flex-1"
-                          onClick={() => addToCart.mutate(item.product_id)}
+                          onClick={() => handleAddToCart(item.product_id)}
                           disabled={
-                            addToCart.isPending || 
+                            isAdding || 
                             !item.products.is_active || 
                             item.products.stock_quantity === 0
                           }
@@ -260,7 +227,7 @@ const Wishlist = () => {
                           <ShoppingCart className="h-4 w-4 mr-2" />
                           {item.products.stock_quantity === 0 
                             ? 'Esgotado' 
-                            : addToCart.isPending 
+                            : isAdding 
                               ? 'Adicionando...' 
                               : 'Adicionar'
                           }

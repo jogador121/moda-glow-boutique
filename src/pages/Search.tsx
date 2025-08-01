@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/hooks/useCart";
 import { Link } from "react-router-dom";
 import StarRating from "@/components/ui/star-rating";
 import Navigation from "@/components/Navigation";
@@ -39,6 +40,7 @@ const Search = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { addToCart, isAdding } = useCart();
   
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -127,52 +129,22 @@ const Search = () => {
     },
   });
 
-  // Adicionar ao carrinho
-  const addToCart = useMutation({
-    mutationFn: async (productId: string) => {
-      if (!user) throw new Error('Usuário não autenticado');
-
-      const { data: existingItem } = await supabase
-        .from('cart_items')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('product_id', productId)
-        .maybeSingle();
-
-      if (existingItem) {
-        const { error } = await supabase
-          .from('cart_items')
-          .update({ quantity: existingItem.quantity + 1 })
-          .eq('id', existingItem.id);
-
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('cart_items')
-          .insert({
-            user_id: user.id,
-            product_id: productId,
-            quantity: 1,
-          });
-
-        if (error) throw error;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart-count', user?.id] });
+  // Função para adicionar ao carrinho
+  const handleAddToCart = (productId: string) => {
+    if (!user) {
       toast({
-        title: "Adicionado ao carrinho",
-        description: "O produto foi adicionado ao seu carrinho.",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Erro",
-        description: "Não foi possível adicionar ao carrinho. Faça login para continuar.",
+        title: "Login necessário",
+        description: "Faça login para adicionar produtos ao carrinho",
         variant: "destructive",
       });
-    },
-  });
+      return;
+    }
+
+    addToCart.mutate({ 
+      productId,
+      quantity: 1 
+    });
+  };
 
   // Adicionar à wishlist
   const addToWishlist = useMutation({
@@ -458,11 +430,11 @@ const Search = () => {
                         
                         <Button
                           className="flex-1"
-                          onClick={() => addToCart.mutate(product.id)}
-                          disabled={product.stock_quantity === 0}
+                          onClick={() => handleAddToCart(product.id)}
+                          disabled={product.stock_quantity === 0 || isAdding}
                         >
                           <ShoppingCart className="h-4 w-4 mr-2" />
-                          {product.stock_quantity === 0 ? 'Esgotado' : 'Adicionar'}
+                          {product.stock_quantity === 0 ? 'Esgotado' : isAdding ? 'Adicionando...' : 'Adicionar'}
                         </Button>
                       </div>
 

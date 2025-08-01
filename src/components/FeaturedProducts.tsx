@@ -104,11 +104,11 @@ const FeaturedProducts = () => {
 
         {/* Products Grid */}
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 xs:gap-6 lg:gap-8">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="bg-card rounded-xl overflow-hidden shadow-soft animate-pulse">
                 <div className="aspect-[3/4] bg-muted" />
-                <div className="p-4 space-y-3">
+                <div className="p-3 xs:p-4 space-y-3">
                   <div className="h-4 bg-muted rounded w-20" />
                   <div className="h-4 bg-muted rounded" />
                   <div className="h-6 bg-muted rounded w-24" />
@@ -118,7 +118,7 @@ const FeaturedProducts = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 xs:gap-6 lg:gap-8">
             {products?.map((product) => (
               <div
                 key={product.id}
@@ -158,21 +158,21 @@ const FeaturedProducts = () => {
                 </Link>
 
                 {/* Product Info */}
-                <div className="p-4">
+                <div className="p-3 xs:p-4">
                   {/* Product Name */}
                   <Link to={`/produto/${product.slug}`}>
-                    <h3 className="font-medium text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                    <h3 className="font-medium text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors text-sm xs:text-base">
                       {product.name}
                     </h3>
                   </Link>
 
                   {/* Price */}
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-lg font-semibold text-luxury">
+                  <div className="flex items-center gap-2 mb-3 xs:mb-4">
+                    <span className="text-base xs:text-lg font-semibold text-luxury">
                       R$ {product.price.toFixed(2)}
                     </span>
                     {product.compare_price && product.compare_price > product.price && (
-                      <span className="text-sm text-muted-foreground line-through">
+                      <span className="text-xs xs:text-sm text-muted-foreground line-through">
                         R$ {product.compare_price.toFixed(2)}
                       </span>
                     )}
@@ -180,12 +180,13 @@ const FeaturedProducts = () => {
 
                   {/* Add to Cart Button */}
                   <Button
-                    className="w-full group opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300"
+                    className="w-full group xs:opacity-0 xs:group-hover:opacity-100 xs:transform xs:translate-y-2 xs:group-hover:translate-y-0 transition-all duration-300 min-h-[44px] text-sm xs:text-base"
                     variant="default"
                     onClick={() => addToCart(product)}
                   >
-                    <ShoppingBag className="h-4 w-4" />
-                    Adicionar ao Carrinho
+                    <ShoppingBag className="h-4 w-4 mr-2" />
+                    <span className="hidden xs:inline">Adicionar ao Carrinho</span>
+                    <span className="xs:hidden">Adicionar</span>
                   </Button>
                 </div>
               </div>

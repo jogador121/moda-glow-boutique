@@ -52,7 +52,7 @@ const Navigation = () => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link to="/">
-              <h1 className="text-2xl font-display font-semibold text-luxury hover:text-primary transition-smooth cursor-pointer">
+              <h1 className="text-xl xs:text-2xl font-display font-semibold text-luxury hover:text-primary transition-smooth cursor-pointer">
                 Moda Glow
               </h1>
             </Link>
@@ -106,7 +106,7 @@ const Navigation = () => {
 
           {/* Mobile menu button */}
           <div className="md:hidden">
-            <Button variant="ghost" size="icon" onClick={toggleMenu}>
+            <Button variant="ghost" size="icon" onClick={toggleMenu} className="min-h-[44px] min-w-[44px]">
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
           </div>
@@ -116,18 +116,18 @@ const Navigation = () => {
         {isMenuOpen && (
           <div className="md:hidden animate-slideUp">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-card rounded-lg mt-2 shadow-elegant">
-              <div className="flex justify-center space-x-4 mb-4">
-                <Button variant="ghost" size="icon" asChild className="hover-lift">
+              <div className="flex justify-center space-x-6 mb-6">
+                <Button variant="ghost" size="icon" asChild className="hover-lift min-h-[44px] min-w-[44px]">
                   <Link to="/buscar">
                     <Search className="h-5 w-5" />
                   </Link>
                 </Button>
-                <Button variant="ghost" size="icon" asChild className="hover-lift">
+                <Button variant="ghost" size="icon" asChild className="hover-lift min-h-[44px] min-w-[44px]">
                   <Link to="/wishlist">
                     <Heart className="h-5 w-5" />
                   </Link>
                 </Button>
-                <Button variant="ghost" size="icon" asChild className="hover-lift relative">
+                <Button variant="ghost" size="icon" asChild className="hover-lift relative min-h-[44px] min-w-[44px]">
                   <Link to="/carrinho">
                     <ShoppingCart className="h-5 w-5" />
                     {cartItemsCount > 0 && (
@@ -142,14 +142,14 @@ const Navigation = () => {
                 </Button>
                 <UserMenu />
               </div>
-              <Link to="/produtos" className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth">
+              <Link to="/produtos" className="block px-4 py-3 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth min-h-[44px] flex items-center">
                 Produtos
               </Link>
               {categories.map((category) => (
                 <Link
                   key={category.id}
                   to={`/produtos?categoria=${category.slug}`}
-                  className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth"
+                  className="block px-4 py-3 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth min-h-[44px] flex items-center"
                 >
                   {category.name}
                 </Link>

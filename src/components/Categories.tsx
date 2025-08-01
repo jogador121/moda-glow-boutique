@@ -74,7 +74,7 @@ const Categories = () => {
               Explore nossa curadoria especial de produtos selecionados para realçar sua beleza única
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-4 xs:gap-6 lg:gap-8">
             {Array.from({ length: 3 }).map((_, index) => (
               <div key={index} className="animate-pulse">
                 <div className="aspect-[4/5] bg-muted rounded-xl mb-4" />
@@ -107,7 +107,7 @@ const Categories = () => {
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-4 xs:gap-6 lg:gap-8">
           {categories.slice(0, 6).map((category) => (
             <div
               key={category.id}
@@ -124,17 +124,17 @@ const Categories = () => {
               </div>
 
               {/* Content */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+              <div className="absolute bottom-0 left-0 right-0 p-4 xs:p-6 text-white">
                 <div className="mb-2">
-                  <span className="text-sm font-medium text-primary-glow">
+                  <span className="text-xs xs:text-sm font-medium text-primary-glow">
                     {category.product_count} produto{category.product_count !== 1 ? 's' : ''}
                   </span>
                 </div>
-                <h3 className="text-2xl font-display font-semibold mb-2">
+                <h3 className="text-xl xs:text-2xl font-display font-semibold mb-2">
                   {category.name}
                 </h3>
                 {category.description && (
-                  <p className="text-sm text-white/80 mb-4 line-clamp-2">
+                  <p className="text-xs xs:text-sm text-white/80 mb-3 xs:mb-4 line-clamp-2">
                     {category.description}
                   </p>
                 )}
@@ -142,7 +142,7 @@ const Categories = () => {
                   asChild
                   variant="outline" 
                   size="sm" 
-                  className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm group"
+                  className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm group min-h-[44px] text-sm"
                 >
                   <Link to={`/produtos?categoria=${category.slug}`}>
                     Explorar

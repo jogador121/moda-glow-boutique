@@ -4,7 +4,7 @@ import heroBoutique from "@/assets/hero-boutique.jpg";
 
 const Hero = () => {
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden gradient-hero">
+    <section className="relative min-h-[500px] h-screen flex items-center justify-center overflow-hidden gradient-hero">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <img 
@@ -27,7 +27,7 @@ const Hero = () => {
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-semibold text-luxury mb-6 animate-slideUp">
+          <h1 className="text-3xl xs:text-4xl md:text-6xl lg:text-7xl font-display font-semibold text-luxury mb-6 animate-slideUp">
             Elegância que
             <span className="block text-transparent bg-gradient-primary bg-clip-text">
               Inspira Confiança
@@ -35,36 +35,36 @@ const Hero = () => {
           </h1>
 
           {/* Description */}
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed animate-slideUp">
+          <p className="text-base xs:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed animate-slideUp px-4">
             Descubra nossa coleção exclusiva de moda feminina, onde cada peça conta uma história de sofisticação e estilo autêntico.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slideUp">
-            <Button variant="hero" size="hero" className="group">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slideUp px-4">
+            <Button variant="hero" size="hero" className="group w-full sm:w-auto min-h-[48px]">
               Explorar Coleção
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button variant="outline" size="lg" className="hover-lift">
+            <Button variant="outline" size="lg" className="hover-lift w-full sm:w-auto min-h-[48px]">
               Ver Lookbook
             </Button>
           </div>
 
           {/* Stats */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mt-16 animate-scaleIn">
+          <div className="flex flex-col xs:flex-row items-center justify-center gap-6 xs:gap-8 mt-12 xs:mt-16 animate-scaleIn px-4">
             <div className="text-center">
-              <div className="text-2xl font-display font-semibold text-luxury">500+</div>
-              <div className="text-sm text-muted-foreground">Produtos Exclusivos</div>
+              <div className="text-xl xs:text-2xl font-display font-semibold text-luxury">500+</div>
+              <div className="text-xs xs:text-sm text-muted-foreground">Produtos Exclusivos</div>
             </div>
-            <div className="hidden sm:block w-px h-8 bg-border"></div>
+            <div className="hidden xs:block w-px h-6 xs:h-8 bg-border"></div>
             <div className="text-center">
-              <div className="text-2xl font-display font-semibold text-luxury">98%</div>
-              <div className="text-sm text-muted-foreground">Clientes Satisfeitas</div>
+              <div className="text-xl xs:text-2xl font-display font-semibold text-luxury">98%</div>
+              <div className="text-xs xs:text-sm text-muted-foreground">Clientes Satisfeitas</div>
             </div>
-            <div className="hidden sm:block w-px h-8 bg-border"></div>
+            <div className="hidden xs:block w-px h-6 xs:h-8 bg-border"></div>
             <div className="text-center">
-              <div className="text-2xl font-display font-semibold text-luxury">24h</div>
-              <div className="text-sm text-muted-foreground">Entrega Expressa</div>
+              <div className="text-xl xs:text-2xl font-display font-semibold text-luxury">24h</div>
+              <div className="text-xs xs:text-sm text-muted-foreground">Entrega Expressa</div>
             </div>
           </div>
         </div>

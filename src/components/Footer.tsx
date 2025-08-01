@@ -24,25 +24,25 @@ const Footer = () => {
     <footer className="bg-luxury text-luxury-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
-        <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="py-12 xs:py-16 grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-6 xs:gap-8">
           {/* Brand Section */}
-          <div className="lg:col-span-1">
+          <div className="xs:col-span-2 lg:col-span-1">
             <Link to="/">
-              <h3 className="text-2xl font-display font-semibold mb-4 hover:text-primary transition-colors">
+              <h3 className="text-xl xs:text-2xl font-display font-semibold mb-4 hover:text-primary transition-colors">
                 Moda Glow
               </h3>
             </Link>
-            <p className="text-luxury-foreground/70 mb-6 leading-relaxed">
+            <p className="text-luxury-foreground/70 mb-6 leading-relaxed text-sm xs:text-base">
               Sua boutique online de moda feminina, onde elegância e sofisticação se encontram para criar looks únicos e inspiradores.
             </p>
             <div className="flex space-x-4">
-              <Button variant="ghost" size="icon" className="hover:bg-white/10">
+              <Button variant="ghost" size="icon" className="hover:bg-white/10 min-h-[44px] min-w-[44px]">
                 <Instagram className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="hover:bg-white/10">
+              <Button variant="ghost" size="icon" className="hover:bg-white/10 min-h-[44px] min-w-[44px]">
                 <Facebook className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="hover:bg-white/10">
+              <Button variant="ghost" size="icon" className="hover:bg-white/10 min-h-[44px] min-w-[44px]">
                 <Twitter className="h-5 w-5" />
               </Button>
             </div>
@@ -121,17 +121,17 @@ const Footer = () => {
         {/* Bottom Footer */}
         <div className="py-6 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-luxury-foreground/70">
+            <p className="text-xs xs:text-sm text-luxury-foreground/70 text-center md:text-left">
               © 2024 Moda Glow. Todos os direitos reservados.
             </p>
-            <div className="flex items-center gap-6 text-sm">
-              <Link to="/termos" className="text-luxury-foreground/70 hover:text-white transition-colors">
+            <div className="flex flex-col xs:flex-row items-center gap-4 xs:gap-6 text-xs xs:text-sm">
+              <Link to="/termos" className="text-luxury-foreground/70 hover:text-white transition-colors min-h-[44px] flex items-center">
                 Termos de Uso
               </Link>
-              <Link to="/politica-privacidade" className="text-luxury-foreground/70 hover:text-white transition-colors">
+              <Link to="/politica-privacidade" className="text-luxury-foreground/70 hover:text-white transition-colors min-h-[44px] flex items-center">
                 Política de Privacidade
               </Link>
-              <Link to="/cookies" className="text-luxury-foreground/70 hover:text-white transition-colors">
+              <Link to="/cookies" className="text-luxury-foreground/70 hover:text-white transition-colors min-h-[44px] flex items-center">
                 Cookies
               </Link>
             </div>

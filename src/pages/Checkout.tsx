@@ -112,7 +112,7 @@ const Checkout: React.FC = () => {
         .from('orders')
         .insert({
           user_id: user.id,
-          order_number: '', // Será preenchido automaticamente pelo trigger
+          order_number: null, // Será preenchido automaticamente pelo trigger
           subtotal,
           shipping_cost: shippingCost,
           total_amount: total,

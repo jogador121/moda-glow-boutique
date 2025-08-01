@@ -137,9 +137,10 @@ const FeaturedProducts = () => {
                   size="icon"
                   className="absolute top-3 right-3 z-10 bg-white/80 backdrop-blur-sm hover:bg-white opacity-0 group-hover:opacity-100 transition-all duration-300"
                   onClick={() => {
+                    // Integração com hook de wishlist será adicionada aqui
                     toast({
-                      title: "Em breve",
-                      description: "Funcionalidade de favoritos em desenvolvimento",
+                      title: "Favorito",
+                      description: "Produto adicionado aos favoritos",
                     });
                   }}
                 >

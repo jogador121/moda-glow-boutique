@@ -61,14 +61,14 @@ const Navigation = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
-              <Link to="/produtos" className="text-foreground hover:text-primary transition-smooth font-medium">
+              <Link to="/produtos" className="text-foreground hover:text-primary transition-smooth font-body font-medium">
                 Produtos
               </Link>
               {categories.map((category) => (
                 <Link
                   key={category.id}
                   to={`/produtos?categoria=${category.slug}`}
-                  className="text-foreground hover:text-primary transition-smooth font-medium"
+                  className="text-foreground hover:text-primary transition-smooth font-body font-medium"
                 >
                   {category.name}
                 </Link>
@@ -142,14 +142,14 @@ const Navigation = () => {
                 </Button>
                 <UserMenu />
               </div>
-              <Link to="/produtos" className="block px-4 py-3 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth min-h-[44px] flex items-center">
+              <Link to="/produtos" className="block px-4 py-3 text-base font-body font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth min-h-[44px] flex items-center">
                 Produtos
               </Link>
               {categories.map((category) => (
                 <Link
                   key={category.id}
                   to={`/produtos?categoria=${category.slug}`}
-                  className="block px-4 py-3 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth min-h-[44px] flex items-center"
+                  className="block px-4 py-3 text-base font-body font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth min-h-[44px] flex items-center"
                 >
                   {category.name}
                 </Link>

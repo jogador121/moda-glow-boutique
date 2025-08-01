@@ -9,6 +9,7 @@ import { Heart, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { useWishlist } from '@/hooks/useWishlist';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 
@@ -35,6 +36,20 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { isInWishlist, toggleWishlist } = useWishlist();
+
+  const handleWishlistClick = () => {
+    if (!user) {
+      toast({
+        title: "Login necessário",
+        description: "Faça login para adicionar produtos aos favoritos",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toggleWishlist.mutate({ productId: product.id, productName: product.name });
+  };
 
   const addToCart = async () => {
     if (!user) {
@@ -129,10 +144,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           className="shrink-0"
           onClick={(e) => {
             e.preventDefault();
-            // TODO: Adicionar à wishlist
+            handleWishlistClick();
           }}
         >
-          <Heart className="h-4 w-4" />
+          <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : ''}`} />
         </Button>
         <Button
           className="flex-1"

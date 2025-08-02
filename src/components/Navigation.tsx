@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserMenu } from "./auth/UserMenu";
 import NavLinkItem from "@/components/ui/NavLinkItem";
+import IconButtonWithBadge from "@/components/ui/IconButtonWithBadge";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -75,29 +76,9 @@ const Navigation = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" size="icon" asChild className="hover-lift">
-              <Link to="/buscar">
-                <Search className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button variant="ghost" size="icon" asChild className="hover-lift">
-              <Link to="/wishlist">
-                <Heart className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button variant="ghost" size="icon" asChild className="hover-lift relative">
-              <Link to="/carrinho">
-                <ShoppingCart className="h-5 w-5" />
-                {cartItemsCount > 0 && (
-                  <Badge 
-                    variant="destructive" 
-                    className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
-                  >
-                    {cartItemsCount}
-                  </Badge>
-                )}
-              </Link>
-            </Button>
+            <IconButtonWithBadge to="/buscar" icon={Search} ariaLabel="Buscar" />
+            <IconButtonWithBadge to="/wishlist" icon={Heart} ariaLabel="Lista de Desejos" />
+            <IconButtonWithBadge to="/carrinho" icon={ShoppingCart} badgeContent={cartItemsCount} ariaLabel="Carrinho de Compras" />
             <UserMenu />
           </div>
 
@@ -114,29 +95,9 @@ const Navigation = () => {
           <div className="md:hidden animate-slideUp">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-card rounded-lg mt-2 shadow-elegant">
               <div className="flex justify-center space-x-6 mb-6">
-                <Button variant="ghost" size="icon" asChild className="hover-lift min-h-[44px] min-w-[44px]">
-                  <Link to="/buscar">
-                    <Search className="h-5 w-5" />
-                  </Link>
-                </Button>
-                <Button variant="ghost" size="icon" asChild className="hover-lift min-h-[44px] min-w-[44px]">
-                  <Link to="/wishlist">
-                    <Heart className="h-5 w-5" />
-                  </Link>
-                </Button>
-                <Button variant="ghost" size="icon" asChild className="hover-lift relative min-h-[44px] min-w-[44px]">
-                  <Link to="/carrinho">
-                    <ShoppingCart className="h-5 w-5" />
-                    {cartItemsCount > 0 && (
-                      <Badge 
-                        variant="destructive" 
-                        className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
-                      >
-                        {cartItemsCount}
-                      </Badge>
-                    )}
-                  </Link>
-                </Button>
+                <IconButtonWithBadge to="/buscar" icon={Search} ariaLabel="Buscar" onClick={toggleMenu} />
+                <IconButtonWithBadge to="/wishlist" icon={Heart} ariaLabel="Lista de Desejos" onClick={toggleMenu} />
+                <IconButtonWithBadge to="/carrinho" icon={ShoppingCart} badgeContent={cartItemsCount} ariaLabel="Carrinho de Compras" onClick={toggleMenu} />
                 <UserMenu />
               </div>
               <NavLinkItem to="/produtos" label="Produtos" isMobile onClick={toggleMenu} />

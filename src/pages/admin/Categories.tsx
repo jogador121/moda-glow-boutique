@@ -46,7 +46,7 @@ export default function AdminCategories() {
     try {
       const { data, error } = await supabase
         .from('categories')
-        .select('*')
+        .select('id, name, slug, description, image_url, is_active, display_order, parent_id, created_at')
         .order('display_order', { ascending: true });
 
       if (error) throw error;

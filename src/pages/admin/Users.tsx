@@ -40,7 +40,7 @@ export default function AdminUsers() {
       // Buscar perfis de usuário com estatísticas de pedidos
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, user_id, full_name, email, phone, role, created_at, updated_at')
         .order('created_at', { ascending: false });
 
       if (profilesError) throw profilesError;

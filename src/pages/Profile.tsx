@@ -45,7 +45,7 @@ const Profile = () => {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, full_name, email, phone, avatar_url, date_of_birth, role')
         .eq('user_id', user.id)
         .maybeSingle();
 

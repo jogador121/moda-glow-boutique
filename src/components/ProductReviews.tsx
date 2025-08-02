@@ -73,7 +73,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
 
       const { data, error } = await supabase
         .from('reviews')
-        .select('*')
+        .select('id, rating, title, comment, created_at, updated_at')
         .eq('product_id', productId)
         .eq('user_id', user.id)
         .maybeSingle();

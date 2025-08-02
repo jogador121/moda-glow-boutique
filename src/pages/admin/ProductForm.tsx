@@ -112,7 +112,7 @@ const ProductForm: React.FC = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select('id, name, slug, description, short_description, price, compare_price, images, sizes, colors, materials, care_instructions, stock_quantity, category_id, tags, is_active, is_featured, sku, weight, dimensions, min_stock_alert, meta_title, meta_description, stripe_product_id, stripe_price_id, last_stripe_sync')
         .eq('id', id)
         .single();
 

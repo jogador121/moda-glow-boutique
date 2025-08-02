@@ -46,7 +46,7 @@ const ProductDetail: React.FC = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select('id, name, slug, description, short_description, price, compare_price, images, sizes, colors, materials, care_instructions, stock_quantity, category_id, tags, is_featured')
         .eq('slug', slug)
         .eq('is_active', true)
         .single();

@@ -95,7 +95,7 @@ export const useCart = () => {
       // Verificar se já existe no carrinho com as mesmas especificações
       const { data: existingItem } = await supabase
         .from('cart_items')
-        .select('*')
+        .select('id, quantity')
         .eq('user_id', user.id)
         .eq('product_id', productId)
         .eq('selected_size', selectedSize || null)

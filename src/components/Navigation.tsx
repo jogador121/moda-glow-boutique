@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserMenu } from "./auth/UserMenu";
+import NavLinkItem from "@/components/ui/NavLinkItem";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -61,17 +62,13 @@ const Navigation = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
-              <Link to="/produtos" className="text-foreground hover:text-primary transition-smooth font-body font-medium">
-                Produtos
-              </Link>
+              <NavLinkItem to="/produtos" label="Produtos" />
               {categories.map((category) => (
-                <Link
+                <NavLinkItem
                   key={category.id}
                   to={`/produtos?categoria=${category.slug}`}
-                  className="text-foreground hover:text-primary transition-smooth font-body font-medium"
-                >
-                  {category.name}
-                </Link>
+                  label={category.name}
+                />
               ))}
             </div>
           </div>
@@ -142,17 +139,15 @@ const Navigation = () => {
                 </Button>
                 <UserMenu />
               </div>
-              <Link to="/produtos" className="block px-4 py-3 text-base font-body font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth min-h-[44px] flex items-center">
-                Produtos
-              </Link>
+              <NavLinkItem to="/produtos" label="Produtos" isMobile onClick={toggleMenu} />
               {categories.map((category) => (
-                <Link
+                <NavLinkItem
                   key={category.id}
                   to={`/produtos?categoria=${category.slug}`}
-                  className="block px-4 py-3 text-base font-body font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-smooth min-h-[44px] flex items-center"
-                >
-                  {category.name}
-                </Link>
+                  label={category.name}
+                  isMobile
+                  onClick={toggleMenu}
+                />
               ))}
             </div>
           </div>

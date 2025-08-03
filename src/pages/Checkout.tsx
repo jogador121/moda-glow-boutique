@@ -146,15 +146,9 @@ const Checkout: React.FC = () => {
 
       if (itemsError) throw itemsError;
 
-      // Atualizar pedido com payment_id para webhook tracking
-      const { error: updateOrderError } = await supabase
-        .from('orders')
-        .update({ payment_id: `temp_${order.id}` })
-        .eq('id', order.id);
-
-      if (updateOrderError) throw updateOrderError;
-
-      // Processar pagamento via Stripe
+      // Processar pagamento via Stripe PRIMEIRO
+      console.log('Criando sessão de pagamento para pedido:', order.id);
+      
       const { data: paymentData, error: paymentError } = await supabase.functions
         .invoke('create-payment', {
           body: {
@@ -172,7 +166,16 @@ const Checkout: React.FC = () => {
           },
         });
 
-      if (paymentError) throw paymentError;
+      if (paymentError) {
+        console.error('Erro na criação da sessão Stripe:', paymentError);
+        throw new Error(`Erro no pagamento: ${paymentError.message || 'Erro desconhecido'}`);
+      }
+
+      if (!paymentData?.url) {
+        throw new Error('URL de pagamento não retornada pelo Stripe');
+      }
+
+      console.log('Sessão Stripe criada com sucesso:', paymentData.session_id);
 
       // Limpar carrinho após criar pedido
       await supabase
@@ -183,14 +186,26 @@ const Checkout: React.FC = () => {
       return { order, paymentUrl: paymentData.url };
     },
     onSuccess: (data) => {
+      console.log('Pedido criado com sucesso:', data.order.id);
       queryClient.invalidateQueries({ queryKey: ['cart', user?.id] });
       
       // Redirecionar para Stripe Checkout
       if (data.paymentUrl) {
+        console.log('Redirecionando para Stripe Checkout');
         window.open(data.paymentUrl, '_blank');
-        navigate('/pedido-confirmado', { 
-          state: { orderId: data.order.id, orderNumber: data.order.order_number } 
-        });
+        
+        // Pequeno delay antes de navegar para a página de confirmação
+        setTimeout(() => {
+          navigate('/pedido-confirmado', { 
+            state: { 
+              orderId: data.order.id, 
+              orderNumber: data.order.order_number,
+              awaitingPayment: true
+            } 
+          });
+        }, 1000);
+      } else {
+        throw new Error('URL de pagamento não disponível');
       }
     },
     onError: (error) => {

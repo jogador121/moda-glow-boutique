@@ -96,12 +96,19 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, supabas
 
   try {
     // Buscar pedido pelo stripe session id
+    logStep("Buscando pedido pelo session_id", { session_id: session.id });
+    
     const { data: orders, error: orderError } = await supabase
       .from('orders')
       .select('*')
       .eq('payment_id', session.id);
 
-    if (orderError) throw orderError;
+    if (orderError) {
+      logStep("Erro ao buscar pedido", { error: orderError.message });
+      throw orderError;
+    }
+
+    logStep("Pedidos encontrados", { count: orders?.length || 0 });
 
     if (orders && orders.length > 0) {
       const order = orders[0];

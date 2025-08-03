@@ -9,13 +9,10 @@ interface NavLinkItemProps {
 }
 
 const NavLinkItem: React.FC<NavLinkItemProps> = ({ to, label, isMobile, onClick }) => {
-  const baseClasses = "font-body font-medium text-foreground hover:text-primary transition-smooth";
-  const mobileClasses = "block px-4 py-3 text-base hover:bg-accent rounded-md min-h-[44px] flex items-center";
-
   return (
     <Link
       to={to}
-      className={`${baseClasses} ${isMobile ? mobileClasses : ""}`.trim()}
+      className={isMobile ? "nav-link-mobile" : "nav-link-desktop"}
       onClick={onClick}
     >
       {label}

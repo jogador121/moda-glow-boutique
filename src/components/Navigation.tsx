@@ -84,7 +84,7 @@ const Navigation = () => {
 
           {/* Mobile menu button */}
           <div className="md:hidden">
-            <Button variant="ghost" size="icon" onClick={toggleMenu} className="min-h-[44px] min-w-[44px]">
+            <Button variant="ghost" size="icon" onClick={toggleMenu} className="icon-button-size">
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
           </div>

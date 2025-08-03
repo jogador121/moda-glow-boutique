@@ -19,7 +19,7 @@ const IconButtonWithBadge: React.FC<IconButtonWithBadgeProps> = ({
   ariaLabel,
   onClick,
 }) => (
-  <Button variant="ghost" size="icon" asChild className="hover-lift relative min-h-[44px] min-w-[44px]">
+  <Button variant="ghost" size="icon" asChild className="hover-lift relative icon-button-size">
     <Link to={to} aria-label={ariaLabel} onClick={onClick}>
       <Icon className="h-5 w-5" />
       {badgeContent !== undefined && badgeContent > 0 && (

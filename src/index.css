@@ -195,6 +195,20 @@
   .animate-scaleIn {
     animation: scaleIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
   }
+
+  /* Navigation utility classes */
+  .nav-link-desktop {
+    @apply font-sans font-medium text-foreground hover:text-primary transition-smooth;
+  }
+
+  .nav-link-mobile {
+    @apply block px-4 py-3 text-base font-sans font-medium text-foreground hover:text-primary hover:bg-accent rounded-md min-h-[44px] flex items-center transition-smooth;
+  }
+
+  /* Icon button utility classes */
+  .icon-button-size {
+    @apply min-h-[44px] min-w-[44px];
+  }
 }
 
 @keyframes fadeIn {

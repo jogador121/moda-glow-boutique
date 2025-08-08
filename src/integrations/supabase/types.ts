@@ -561,6 +561,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      reduce_stock: {
+        Args: { product_id: string; quantity: number }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

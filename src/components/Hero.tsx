@@ -1,17 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import heroBoutique from "@/assets/hero-boutique.jpg";
-
 const Hero = () => {
-  return (
-    <section className="relative min-h-[500px] h-screen flex items-center justify-center overflow-hidden gradient-hero">
+  return <section className="relative min-h-[500px] h-screen flex items-center justify-center overflow-hidden gradient-hero">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
-        <img 
-          src={heroBoutique} 
-          alt="Elegant Boutique Interior" 
-          className="w-full h-full object-cover opacity-30"
-        />
+        <img src={heroBoutique} alt="Elegant Boutique Interior" className="w-full h-full object-cover opacity-30" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-background/40 to-transparent"></div>
       </div>
 
@@ -29,7 +23,7 @@ const Hero = () => {
           {/* Main Heading */}
           <h1 className="text-3xl xs:text-4xl md:text-6xl lg:text-7xl font-display font-semibold text-luxury mb-6 animate-slideUp">
             Elegância que
-            <span className="block text-transparent bg-gradient-primary bg-clip-text">
+            <span className="block bg-gradient-primary bg-clip-text text-gray-950">
               Inspira Confiança
             </span>
           </h1>
@@ -73,8 +67,6 @@ const Hero = () => {
       {/* Decorative Elements */}
       <div className="absolute top-20 left-10 w-20 h-20 bg-primary/10 rounded-full blur-xl animate-pulse"></div>
       <div className="absolute bottom-40 right-20 w-32 h-32 bg-accent/10 rounded-full blur-2xl animate-pulse delay-1000"></div>
-    </section>
-  );
+    </section>;
 };
-
 export default Hero;
